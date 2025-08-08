@@ -19,3 +19,17 @@
 /fuel/app/logs/*/*/*
 /fuel/app/cache/*/*
 /fuel/app/config/crypt.php
+
+.env
+node_modules/
+.vs/
+.vscode/
+__pycache__/
+*.pyc
+/dist
+/build
+*.log
+.DS_Store
+
+logs.txt
+error_log.txt
