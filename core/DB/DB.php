@@ -58,8 +58,6 @@ class DB {
         ";
         // $pdo = DB::getConnection();
         // $pdo->exec("ALTER TABLE users ADD COLUMN level TINYINT NOT NULL DEFAULT 1");
-
-
         self::getConnection()->exec($sql);
         echo "Таблицы успешно созданы";
     }

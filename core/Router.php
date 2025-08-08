@@ -57,10 +57,11 @@ class Router {
 
                     }
                 }
-                try {
-                    require_once "../controllers/{$controllerName}.php";
-                } catch (\Throwable $th) {
-                    flash_modal('Ошибка загрузки контроллера', 'error', 500);
+                $pathController = "../Core/Сontrollers/{$controllerName}.php";
+                if (file_exists($pathController)) {
+                    require_once $pathController;
+                } else {
+                    flash_modal('Ошибка загрузки контроллера ' . $pathController, 'error', 500);
                 }
                 $controller = new $controllerName();
                 return call_user_func_array([$controller, $methodName], $matches); // Вызываем указанный метод контроллера

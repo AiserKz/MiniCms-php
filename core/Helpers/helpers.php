@@ -13,7 +13,11 @@ function initRoute() {
 
     if (preg_match('/\.(png|jpg|jpeg|gif|css|js|ico)$/i', $uri)) {
         return;
+    } else if (str_starts_with($uri, '/.well-known/')) {
+        return null;
     }
+
+
     log_message("Полученный путь: $uri");
     $basePath = env('APP_URL');
     if (str_starts_with($uri, $basePath)) {
@@ -46,9 +50,9 @@ function log_message(string $message, $type = 'info'): void {
         return;
     }
     if ($type === 'error') {
-        $path = env('APP_LOG_ERROR_PATH', __DIR__ . '/../logs/error_log.log');
+        $path = '../logs/' . env('APP_LOG_ERROR_PATH', __DIR__ . '../logs/error_log.log');
     } else {
-        $path = env('APP_LOG_PATH', __DIR__ . '/../logs/logs.log');
+        $path = '../logs/' . env('APP_LOG_PATH', __DIR__ . '../logs/logs.log');
     }
     $dir = dirname($path);
 
@@ -83,7 +87,7 @@ function asset(string $path): string {
     if (file_exists($fullpath)) {
         $url .= '?v=' . filemtime($fullpath);
     }
-    return $url;
+    return trim($url);
 }
 
 function redirect(string $path): void {
