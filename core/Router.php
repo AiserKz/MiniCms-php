@@ -50,7 +50,7 @@ class Router {
                         if (class_exists($mwClass)) {
                             $mwClass::handle();
                         } else {
-                            echo "⚠️ Middleware класс '$mwClass' не найден!";
+                            flash_modal('Ошибка загрузки middleware', 'error', 500);
                             exit;
                         }
 
@@ -68,28 +68,5 @@ class Router {
         }
 
         flash_modal('Такой страницы не существует...', 'error', 404);
-        // http_response_code(404);
-        // echo '404 Not Found';
-
-        // $action = $this->routes[$method][$uri] ?? null;
-      
-        // if (!$action) {
-        //     http_response_code(404);
-        //     echo '404 Not Found';
-        //     return;
-        // }
-        // // Разделяем строку типа 'HomeController@index' на две части:
-        // // $controllerName = 'HomeController', $methodName = 'index'
-        // list($controllerName, $methodName) = explode('@', $action);
-
-        // // Подключаем файл контроллера по имени.
-        // // Важно: используем двойные кавычки и фигурные скобки!
-        // require_once "../controllers/{$controllerName}.php";
-
-        // // Создаём объект этого контроллера
-        // $controller = new $controllerName();
-
-        // // Вызываем указанный метод контроллера
-        // $controller->$methodName();
     }
 }

@@ -1,8 +1,8 @@
 <?php 
 
 use Core\View;
-use Core\DB;
-use Core\Validator;
+use Core\DB\DB;
+use Core\Validator\Validator;
 
 class AuthController {
     public function index() {
@@ -35,11 +35,14 @@ class AuthController {
         $password = password_hash($password, PASSWORD_BCRYPT);
         
         $pdo = DB::getConnection();
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE name = :name");
-        $stmt->execute(['name' => $name]);
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE name = :name OR email = :email");
+        $stmt->execute([
+            'name' => $name,
+            'email' => $email
+        ]);
 
         if ($stmt->fetch()) {
-            View::render('login', ['title' => 'Авторизация', 'error' => 'Пользователь с таким именем уже существует']);
+            View::render('login', ['title' => 'Авторизация', 'error' => 'Пользователь с таким именем или email уже существует']);
             return;
         }
         

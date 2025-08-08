@@ -1,7 +1,7 @@
 <?php 
 
 use Core\View;
-use Core\DB;
+use Core\DB\DB;
 use Models\Post;
 use Models\Comments;
 

@@ -2,8 +2,8 @@
 
 namespace Models;
 
-use Core\DB;
-use Core\BaseModel;
+use Core\DB\DB;
+use Core\Models\BaseModel;
 use PDO;
 
 class User extends BaseModel

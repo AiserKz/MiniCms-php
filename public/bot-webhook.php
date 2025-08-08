@@ -3,11 +3,15 @@
 require_once __DIR__ . '/../vendor/autoload.php';// Подключаем автозагрузку
 
 use Telegram\Bot\Api;
-use Core\BotModule;
+use Core\Models\BotModule;
 use Models\Telegram;
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: ' . env('APP_URL'));
+    exit;
+}
 
 
 $telegram = new Api(env('TELEGRAM_BOT_TOKEN'));

@@ -1,11 +1,11 @@
 <?php 
 
 use Core\View;
-use Core\DB;
+use Core\DB\DB;
 use Models\Post;
 use Models\Comments;
-use Core\TelegramService;
-use Core\Validator;
+use Core\Bot\TelegramService;
+use Core\Validator\Validator;
 
 class PostController {
 

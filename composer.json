@@ -11,7 +11,7 @@
             "Middleware\\": "Middleware/"
         },
         "files": [
-            "core/helpers.php"
+            "core/Helpers/helpers.php"
         ]
     }
 }

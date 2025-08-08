@@ -1,25 +1,24 @@
 <?php
 
 function init() {
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
-    $dotenv->load();
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     } 
+    initBot();
+    return initRoute();
+}
 
+function initRoute() {
     $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
     if (preg_match('/\.(png|jpg|jpeg|gif|css|js|ico)$/i', $uri)) {
         return;
     }
-
     log_message("Полученный путь: $uri");
     $basePath = env('APP_URL');
     if (str_starts_with($uri, $basePath)) {
         $uri = substr($uri, strlen($basePath)); // Удаляем базовый путь 1 аргумент - строка, 2 аргумент - количество удаленных символов
     }
-    
-    initBot();
     return rtrim($uri, '/') ?: '/'; 
 }
 

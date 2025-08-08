@@ -1,6 +1,6 @@
 <?php
 
-namespace Core;
+namespace Core\Models;
 
 use Telegram\Bot\Api;
 use Models\Post;
