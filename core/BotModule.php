@@ -31,7 +31,7 @@ class BotModule {
                 break;
 
             default:
-                $this->unknownCommand(); // ✅ исправлено
+                $this->unknownCommand(); 
                 break;
         }
     }
@@ -45,7 +45,7 @@ class BotModule {
 
     protected function help() {
         $this->bot->sendMessage([
-            'chat_id' => $this->chat_id, // ✅ исправлено
+            'chat_id' => $this->chat_id, 
             'text' => "🛠 Вот список команд:\n\n/start — приветствие\n/latest — последний пост\n/help — помощь",
         ]);
     }
@@ -70,7 +70,7 @@ class BotModule {
         ]);
     }
 
-    protected function unknownCommand() { // ✅ переименован
+    protected function unknownCommand() { 
         $this->bot->sendMessage([
             'chat_id' => $this->chat_id,
             'text' => "🤔 Я не понимаю эту команду. Напишите /help для списка.",

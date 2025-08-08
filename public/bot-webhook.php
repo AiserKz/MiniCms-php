@@ -11,6 +11,8 @@ $dotenv->load();
 
 
 $telegram = new Api(env('TELEGRAM_BOT_TOKEN'));
+
+
 $update = $telegram->getWebhookUpdate();
 
 $message = $update->getMessage();
@@ -19,8 +21,8 @@ $chat = $message->getChat();
 $chat_id = $chat->getId();
 $text = $message->getText();
 
-// Записываем весь апдейт для истории
-file_put_contents('logs.txt', print_r($update, true), FILE_APPEND);
+// Записываем весь апдейт для отладки
+// log_message(print_r($update, true));
 
 if ($chat_id && $text) {
     try {
@@ -32,9 +34,9 @@ if ($chat_id && $text) {
         $errorMessage .= $e->getMessage() . "\n";
         $errorMessage .= $e->getFile() . ":" . $e->getLine() . "\n";
         $errorMessage .= $e->getTraceAsString() . "\n\n";
-        file_put_contents('error_log.txt', $errorMessage, FILE_APPEND);
+        log_message($errorMessage, 'error');
     }
 } else {
-    file_put_contents('error_log.txt', "[Не получены chat_id или text]\n", FILE_APPEND);
+    log_message("[Не получены chat_id или text]", 'error');
 }
 

@@ -1,0 +1,19 @@
+<?php
+
+require __DIR__ . '/vendor/autoload.php';
+$command = $argv[1] ?? null;
+
+switch ($command) {
+    case 'migrate':
+        echo "Запускаю миграции\n";
+        require __DIR__ . '/core/migrate.php';
+        break;
+    case 'cache:clear':
+        array_map('unlink', glob(__DIR__ . '/cache/*.cache'));
+        echo "Кэш очищен\n";
+        break;
+    default:
+        echo "Доступные команды: \n";
+        echo "  migrate        — Запустить миграции\n";
+        echo "  cache:clear    — Очистить кэш\n";
+}

@@ -1,4 +1,5 @@
 <div class="flex flex-col items-center justify-center py-12">
+   
     <h1 class="text-5xl font-extrabold text-teal-300 mb-3 drop-shadow-lg">MiniCMS Блог</h1>
     <p class="text-xl text-gray-300 max-w-xl text-center">Добро пожаловать в тестовый блог на PHP! Здесь вы найдёте интересные статьи, советы и новости из мира веб-разработки.</p>
 

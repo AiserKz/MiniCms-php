@@ -31,5 +31,5 @@ __pycache__/
 *.log
 .DS_Store
 
-logs.txt
-error_log.txt
+*.cache
+

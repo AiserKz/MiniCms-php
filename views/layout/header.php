@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?> | MiniCms</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="icon" href="uploads/images/favicon.png" type="image/png">
+    <link rel="icon" href=" <?= asset('images/favcon.png') ?>" type="image/png">
 
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col">

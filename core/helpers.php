@@ -9,12 +9,56 @@ function init() {
 
     $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-    $basePath = env('APP_URL');
-    if (str_starts_with($uri, $basePath)) { // Проверка на наличие базового пути 1 аргумент - строка, 2 аргумент - начало строки
-        $uri = substr($uri, strlen($basePath));// Удаляем базовый путь 1 аргумент - строка, 2 аргумент - количество удаленных символов
+    if (preg_match('/\.(png|jpg|jpeg|gif|css|js|ico)$/i', $uri)) {
+        return;
     }
 
-    return rtrim($uri, '/') ?: '/'; // Если в конце строки есть слеш, то удаляем его
+    log_message("Полученный путь: $uri");
+    $basePath = env('APP_URL');
+    if (str_starts_with($uri, $basePath)) {
+        $uri = substr($uri, strlen($basePath)); // Удаляем базовый путь 1 аргумент - строка, 2 аргумент - количество удаленных символов
+    }
+    
+    initBot();
+    return rtrim($uri, '/') ?: '/'; 
+}
+
+function initBot() {
+    $webhookUrl = env('TELEGRAM_BOT_WEBHOOK_URL') . env('APP_URL') . '/bot-webhook.php';
+
+    if (cache_get('last_webhook') === $webhookUrl) { 
+        return;
+    }
+
+    try {
+        $telegram = new \Telegram\Bot\Api(env('TELEGRAM_BOT_TOKEN'));
+        $telegram->setWebhook(['url' => $webhookUrl]);
+        log_message("Webhook установлен: $webhookUrl");
+        cache_set('last_webhook', $webhookUrl);
+    } catch (\Throwable $e) {
+        log_message("Ошибка установки webhook: " . $e->getMessage());
+    }
+}
+
+
+
+function log_message(string $message, $type = 'info'): void {
+    if (env('APP_DEBUG') === false) {
+        return;
+    }
+    if ($type === 'error') {
+        $path = env('APP_LOG_ERROR_PATH', __DIR__ . '/../logs/error_log.log');
+    } else {
+        $path = env('APP_LOG_PATH', __DIR__ . '/../logs/logs.log');
+    }
+    $dir = dirname($path);
+
+    if (!is_dir($dir)) {
+        mkdir($dir, 0777, true);
+    }
+
+    $fullMessage = "[" . date('Y-m-d H:i:s') . "] " . $message . PHP_EOL;
+    file_put_contents($path, $fullMessage, FILE_APPEND);
 }
 
 function view(string $template, array $data = []): void {
@@ -24,13 +68,23 @@ function view(string $template, array $data = []): void {
         die("Шаблон $template  не найден: $templatePath");
     }
 
-    extract($data); // превращает ['title' => 'О нас'] в $title = 'О нас'
+    extract($data); 
     require $templatePath;
 }
 
 function url(string $path = ''): string {
     $base = env('APP_URL');
     return rtrim($base, '/') . '/' . ltrim($path, '/');
+}
+
+function asset(string $path): string {
+    $fullpath = __DIR__ . '/../public/uploads/' . ltrim($path, '/');
+    $url = url('uploads/' . ltrim($path, '/'));
+
+    if (file_exists($fullpath)) {
+        $url .= '?v=' . filemtime($fullpath);
+    }
+    return $url;
 }
 
 function redirect(string $path): void {
@@ -83,8 +137,6 @@ function generate_csrf_token() {
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
-    
-    // Обязательно экранируем кавычки и закрываем строку правильно
     return '<input type="hidden" name="csrf_token" value="' . htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES) . '">';
 }
 
@@ -104,11 +156,11 @@ function is_floading($action_key, $seconds = 10) {
 
 
 function flash_modal($message, $errors = [], $type = 'error', $code = 500) {
-    http_response_code($code); // Устанавливаем нужный HTTP-код
+    http_response_code($code); 
 
     $view = new \Core\View();
     
-    // Отрисовываем шаблон, передаём в него данные
+  
     echo $view->render('flashmodal', [
         'title' => 'Ошибка',
         'message' => $message,
@@ -116,7 +168,7 @@ function flash_modal($message, $errors = [], $type = 'error', $code = 500) {
         'errors' => $errors
     ]);
 
-    exit; // Завершаем выполнение скрипта
+    exit;
 }
 
 function flash_toast($message, $type = 'success') {
@@ -129,18 +181,45 @@ function checkOrFail($post) {
     }
 }
 
-// function env($key, $default = null) {
-//     static $env = null;
 
-//     if ($env === null) {
-//         $env = [];
-//         $lines = file(__DIR__ . '/../.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-//         foreach ($lines as $line) {
-//             if (str_starts_with(trim($line), '#')) continue;
-//             list($name, $value) = explode('=', $line, 2);
-//             $env[trim($name)] = trim($value);
-//         }
-//     }
+if (!function_exists('cache_path')) {
+    function cache_path(): string {
+        $path = __DIR__ . '/../cache/';
+        if (!is_dir($path)) {
+            mkdir($path, 0777, true);
+        }
+        return $path;
+    }
+}
 
-//     return $env[$key] ?? $default;
-// }
+if (!function_exists('cache_set')) {
+    function cache_set(string $key, string $value): void {
+        $file = cache_path() . '/' . $key . '.cache';
+        file_put_contents($file, $value);
+    }
+}
+
+if (!function_exists('cache_get')) {
+    function cache_get(string $key, $default = null): mixed {
+        $file = cache_path() . '/' . $key . '.cache';
+        if (file_exists($file)) {
+            return trim(file_get_contents($file));
+        }
+        return $default;
+    }
+}
+
+if (!function_exists('cache_has')) {
+    function cache_has(string $key): bool {
+        return file_exists(cache_path() . '/' . $key . '.cache');
+    }
+}
+
+if (!function_exists('cache_delete')) {
+    function cache_delete(string $key): void {
+        $file = cache_path() . '/' . $key . '.cache';
+        if (file_exists($file)) {
+            unlink($file);
+        }
+    }
+}

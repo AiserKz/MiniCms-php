@@ -28,7 +28,7 @@ class TelegramService {
                 $errorMessage = "[Ошибка в " . date('Y-m-d H:i:s') . "]\n";
                 $errorMessage .= $e->getMessage() . "\n";
                 $errorMessage .= $e->getFile() . ":" . $e->getLine() . "\n";
-                file_put_contents('error_log.txt', $errorMessage, FILE_APPEND);
+                log_message($errorMessage, 'error');
             }
         }
     }
